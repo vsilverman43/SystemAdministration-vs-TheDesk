@@ -1,0 +1,31 @@
+version: '3' # docker version, probs wrong version and will needs to check when device is setup
+services:
+ 
+# for web dev
+  www:
+    image: php:apache
+    volumes:
+      - "./var/www/html" # for syncing project dir with container web directery
+      ports:
+        - 80:80
+        - 443:443 # ssl traffic
+
+# Classic database
+db:
+  image: mysql:latest
+  environment :
+    - MYSQL_DATABASE=php_docker
+    - MYSQL_USER=php_docker
+    - MYSQL_PASSWORD=password # this should live in a env var
+    - MYSQL_ALLOW_EMPTY_PASSWORD=1 # equivalent to True
+  volume:
+    - "./db:/docker-entrypoint-initdb.d" #sync persistent sql files with da container, also install mysqli on docker host
+
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      -  8001:80
+    environment:
+      -  PMA_host-db
+      - PMA_PORT=3306
